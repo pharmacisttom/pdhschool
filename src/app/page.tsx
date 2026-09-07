@@ -372,8 +372,8 @@ export default async function HomePage() {
               <h4 className="text-white font-bold text-base mb-3">ติดต่อสอบถาม</h4>
               <div className="space-y-2 text-sm text-slate-400">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-sky-400 mt-0.5 shrink-0" />
-                  <span>เลขที่ 99 หมู่ 1 ต.ปลวกแดง อ.ปลวกแดง จ.ระยอง 21140</span>
+                  <MapPin className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
+                  <span>เลขที่ 272 ม.1 ต.ปลวกแดง อ.ปลวกแดง จ.ระยอง 21140</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-sky-400 shrink-0" />

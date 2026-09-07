@@ -11,7 +11,7 @@ async function main() {
     { key: 'HOSPITAL_NAME_TH', value: 'โรงพยาบาลปลวกแดง', description: 'ชื่อโรงพยาบาล (ภาษาไทย)', category: 'BRANDING' },
     { key: 'HOSPITAL_NAME_EN', value: 'Pluakdaeng Hospital', description: 'ชื่อโรงพยาบาล (English)', category: 'BRANDING' },
     { key: 'HOSPITAL_PROVINCE', value: 'ระยอง', description: 'จังหวัดที่ตั้งโรงพยาบาล', category: 'BRANDING' },
-    { key: 'HOSPITAL_ADDRESS', value: 'เลขที่ 99 หมู่ 1 ต.ปลวกแดง อ.ปลวกแดง จ.ระยอง 21140', description: 'ที่อยู่ทางการ', category: 'BRANDING' },
+    { key: 'HOSPITAL_ADDRESS', value: 'เลขที่ 272 ม.1 ต.ปลวกแดง อ.ปลวกแดง จ.ระยอง 21140', description: 'ที่อยู่ทางการ', category: 'BRANDING' },
     { key: 'HOSPITAL_PHONE', value: '038-659-123', description: 'เบอร์โทรศัพท์ส่วนกลาง', category: 'BRANDING' },
     { key: 'CURRENT_FISCAL_YEAR', value: '2569', description: 'ปีงบประมาณปัจจุบัน (พ.ศ.)', category: 'GENERAL' },
     { key: 'QUOTA_WARNING_PERCENT', value: '30', description: 'เปอร์เซ็นต์แจ้งเตือนโควต้าใกล้เต็ม (%)', category: 'QUOTA' },

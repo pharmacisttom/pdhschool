@@ -143,11 +143,14 @@ export default function DocumentsPage() {
         <div className="bg-white p-8 sm:p-12 rounded-3xl border border-slate-300 shadow-md max-w-4xl mx-auto print:shadow-none print:border-none print:p-0">
           {/* Official Letterhead */}
           <div className="text-center border-b-2 border-slate-900 pb-6 mb-6">
+            <div className="w-16 h-16 mx-auto mb-2">
+              <img src="/logo.png" alt="ตราสัญลักษณ์โรงพยาบาลปลวกแดง" className="w-full h-full object-contain" />
+            </div>
             <div className="font-extrabold text-xl text-slate-900 tracking-tight">
               โรงพยาบาลปลวกแดง
             </div>
             <div className="text-xs text-slate-700 mt-1">
-              เลขที่ 99 หมู่ 1 ต.ปลวกแดง อ.ปลวกแดง จ.ระยอง 21140 • โทรศัพท์ 038-659-123
+              เลขที่ 272 ม.1 ต.ปลวกแดง อ.ปลวกแดง จ.ระยอง 21140 • โทรศัพท์ 038-659-123
             </div>
             <div className="text-sm font-bold text-slate-900 mt-3">{generatedDoc.documentType}</div>
           </div>
