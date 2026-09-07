@@ -19,8 +19,8 @@ export default async function VerifyDocumentPage(props: { params: Promise<{ code
       <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
         {/* Hospital Header Banner */}
         <div className="bg-gradient-to-r from-sky-700 via-blue-800 to-indigo-900 p-6 text-white text-center relative">
-          <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mx-auto mb-3 text-white shadow-inner">
-            <Hospital className="w-8 h-8" />
+          <div className="w-20 h-20 rounded-2xl bg-white p-2 border-2 border-white/40 flex items-center justify-center mx-auto mb-3 shadow-lg">
+            <img src="/logo.png" alt="ตราโรงพยาบาลปลวกแดง" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-xl font-extrabold tracking-tight">โรงพยาบาลปลวกแดง</h1>
           <p className="text-xs text-sky-200 mt-1 font-medium">

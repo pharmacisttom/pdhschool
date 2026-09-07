@@ -38,6 +38,7 @@ export default function Navbar({ user, onOpenMobile }: NavbarProps) {
     attendance: 'บันทึกเวลาฝึกงาน',
     evaluations: 'การประเมินผล',
     documents: 'เอกสารและหนังสือ',
+    certificates: 'ใบประกาศนียบัตร',
     reports: 'รายงานและสถิติ',
     users: 'จัดการผู้ใช้งาน',
     audit: 'Audit Log',
@@ -54,10 +55,11 @@ export default function Navbar({ user, onOpenMobile }: NavbarProps) {
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Breadcrumbs */}
-        <nav className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-slate-500">
-          <Link href="/dashboard" className="hover:text-sky-700">
-            PDHSCHOOL
+        {/* Breadcrumbs with logo */}
+        <nav className="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-500">
+          <Link href="/dashboard" className="flex items-center gap-1.5 hover:text-sky-700 text-slate-800 font-bold">
+            <img src="/logo.png" alt="Hospital Logo" className="w-5 h-5 object-contain" />
+            <span>PDHSCHOOL</span>
           </Link>
           {pathSegments.map((segment, index) => {
             const isLast = index === pathSegments.length - 1;

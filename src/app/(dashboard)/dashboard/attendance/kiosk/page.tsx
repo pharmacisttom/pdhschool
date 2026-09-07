@@ -72,8 +72,8 @@ export default function AttendanceKioskPage() {
             <ArrowLeft className="w-4 h-4" />
             <span>กลับหน้ารายการ</span>
           </Link>
-          <div className="flex items-center gap-2 text-teal-400 font-semibold text-sm">
-            <Hospital className="w-5 h-5" />
+          <div className="flex items-center gap-2.5 text-teal-400 font-semibold text-sm">
+            <img src="/logo.png" alt="ตราสัญลักษณ์โรงพยาบาลปลวกแดง" className="w-6 h-6 object-contain rounded-full bg-white/10 p-0.5" />
             <span>โรงพยาบาลปลวกแดง • จุดสแกนลงเวลาประจำวัน</span>
           </div>
         </div>
@@ -100,8 +100,8 @@ export default function AttendanceKioskPage() {
       <main className="max-w-4xl w-full mx-auto px-6 py-8 flex-1 flex flex-col items-center justify-center text-center">
         {/* Printable Hospital Header */}
         <div className="flex flex-col items-center mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400 mb-3 shadow-lg print:border-teal-700 print:text-teal-700">
-            <Hospital className="w-9 h-9" />
+          <div className="w-20 h-20 rounded-2xl bg-white p-2 border-2 border-teal-500/40 flex items-center justify-center mb-3 shadow-xl print:border-teal-700">
+            <img src="/logo.png" alt="ตราโรงพยาบาลปลวกแดง" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight print:text-black">
             โรงพยาบาลปลวกแดง

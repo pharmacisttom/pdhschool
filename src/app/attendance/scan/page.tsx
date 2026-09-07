@@ -185,8 +185,8 @@ function ScanContent() {
       <header className="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-20">
         <div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-400 shadow-inner">
-              <Hospital className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-xl bg-white p-1 border border-teal-400/40 flex items-center justify-center shadow-inner">
+              <img src="/logo.png" alt="ตราโรงพยาบาลปลวกแดง" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="font-bold text-base text-white leading-tight">โรงพยาบาลปลวกแดง</h1>

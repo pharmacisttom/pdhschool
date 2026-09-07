@@ -65,8 +65,12 @@ export default async function HomePage() {
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-600 to-blue-800 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
-              <Hospital className="w-7 h-7" />
+            <div className="w-14 h-14 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md shadow-teal-500/20 border border-slate-100">
+              <img
+                src="/logo.png"
+                alt="ตราสัญลักษณ์โรงพยาบาลปลวกแดง"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">

@@ -206,6 +206,17 @@ export default function Sidebar({
       ],
     },
     {
+      label: 'ใบประกาศนียบัตร',
+      href: '/dashboard/certificates',
+      icon: Award,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.INSTITUTION,
+      ],
+    },
+    {
       label: 'รายงาน',
       href: '/dashboard/reports',
       icon: BarChart3,
@@ -249,16 +260,20 @@ export default function Sidebar({
           collapsed ? 'w-20' : 'w-64'
         } ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
-        {/* Brand */}
+        {/* Brand with Pluakdaeng Hospital Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800">
           <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white shrink-0 shadow-md">
-              <Hospital className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-white p-0.5 flex items-center justify-center shrink-0 shadow-md border border-slate-700">
+              <img
+                src="/logo.png"
+                alt="โรงพยาบาลปลวกแดง"
+                className="w-full h-full object-contain rounded-lg"
+              />
             </div>
             {!collapsed && (
               <div className="leading-tight">
                 <span className="font-extrabold text-lg text-white tracking-tight">PDHSCHOOL</span>
-                <span className="block text-[10px] text-sky-400 font-medium truncate">
+                <span className="block text-[10px] text-teal-400 font-medium truncate">
                   รพ.ปลวกแดง จ.ระยอง
                 </span>
               </div>

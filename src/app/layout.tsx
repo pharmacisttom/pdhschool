@@ -4,6 +4,10 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'PDHSCHOOL | ระบบบริหารจัดการนักเรียน นักศึกษา และแหล่งฝึกงาน โรงพยาบาลปลวกแดง',
   description: 'Pluakdaeng Hospital Student Training & Internship Management System - ระบบบริหารจัดการรับนักศึกษาฝึกงาน การจัดสรรโควต้าตามกลุ่มงาน และการออกเอกสารรับรอง',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({
