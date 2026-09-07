@@ -1,0 +1,561 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleType {
+  SUPER_ADMIN
+  TRAINING_ADMIN
+  DEPARTMENT_ADMIN
+  PRECEPTOR
+  INSTITUTION
+  VIEWER
+}
+
+enum RequestStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  WAITING_DEPARTMENT
+  WAITING_APPROVAL
+  APPROVED
+  PARTIALLY_APPROVED
+  WAITLIST
+  REJECTED
+  CANCELLED
+  IN_TRAINING
+  COMPLETED
+}
+
+enum QuotaStatus {
+  AVAILABLE
+  LIMITED
+  FULL
+  CLOSED
+}
+
+enum PlacementStatus {
+  PENDING
+  APPROVED
+  WAITLIST
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  LEAVE
+  OFFICIAL_LEAVE
+}
+
+enum InstitutionStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum DocumentType {
+  REQUEST_LETTER
+  STUDENT_LIST
+  INSURANCE
+  VACCINATION
+  AGREEMENT
+  OFFICIAL_APPROVAL
+  TRAINING_SCHEDULE
+  CERTIFICATE
+  EVALUATION_SHEET
+}
+
+model User {
+  id                   String       @id @default(cuid())
+  username             String       @unique
+  passwordHash         String
+  email                String       @unique
+  name                 String
+  role                 RoleType     @default(VIEWER)
+  departmentId         String?
+  institutionId        String?
+  preceptorId          String?
+  active               Boolean      @default(true)
+  mustChangePassword   Boolean      @default(false)
+  failedLoginAttempts  Int          @default(0)
+  lockedUntil          DateTime?
+  lastLoginAt          DateTime?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  department           Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  institution          Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  preceptor            Preceptor?   @relation(fields: [preceptorId], references: [id], onDelete: SetNull)
+  auditLogs            AuditLog[]
+  notifications        Notification[]
+
+  @@index([role])
+  @@index([departmentId])
+  @@index([institutionId])
+}
+
+model LoginAttempt {
+  id           String   @id @default(cuid())
+  username     String
+  ipAddress    String?
+  userAgent    String?  @db.Text
+  success      Boolean
+  attemptedAt  DateTime @default(now())
+
+  @@index([username, attemptedAt])
+}
+
+model Institution {
+  id               String            @id @default(cuid())
+  code             String            @unique
+  nameThai         String
+  nameEnglish      String?
+  type             String            @default("มหาวิทยาลัยรัฐ")
+  faculty          String?
+  address          String?           @db.Text
+  province         String?
+  postalCode       String?
+  coordinatorName  String
+  coordinatorPhone String
+  coordinatorEmail String
+  officialEmail    String?
+  status           InstitutionStatus @default(PENDING)
+  notes            String?           @db.Text
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  contacts         InstitutionContact[]
+  users            User[]
+  students         Student[]
+  requests         TrainingRequest[]
+
+  @@index([status])
+  @@index([nameThai])
+}
+
+model InstitutionContact {
+  id            String      @id @default(cuid())
+  institutionId String
+  name          String
+  position      String?
+  phone         String
+  email         String?
+  isPrimary     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId])
+}
+
+model Department {
+  id            String         @id @default(cuid())
+  code          String         @unique
+  nameThai      String
+  nameEnglish   String?
+  description   String?        @db.Text
+  contactPerson String?
+  phone         String?
+  email         String?
+  active        Boolean        @default(true)
+  defaultQuota  Int            @default(4)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  users         User[]
+  quotas        QuotaPeriod[]
+  requests      TrainingRequest[]
+  placements    Placement[]
+  preceptors    Preceptor[]
+  students      Student[]
+  evaluationTemplates EvaluationTemplate[]
+
+  @@index([active])
+}
+
+model Program {
+  id              String         @id @default(cuid())
+  programCode     String         @unique
+  programName     String
+  profession      String
+  educationLevel  String         @default("ปริญญาตรี")
+  active          Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  quotas          QuotaPeriod[]
+  requests        TrainingRequest[]
+  evaluationTemplates EvaluationTemplate[]
+
+  @@index([active])
+}
+
+model QuotaPeriod {
+  id             String          @id @default(cuid())
+  departmentId   String
+  programId      String?
+  academicYear   Int             @default(2569)
+  term           String?         @default("1")
+  startDate      DateTime
+  endDate        DateTime
+  maxStudents    Int             @default(4)
+  status         QuotaStatus     @default(AVAILABLE)
+  notes          String?         @db.Text
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  department     Department      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  program        Program?        @relation(fields: [programId], references: [id], onDelete: SetNull)
+  placements     Placement[]
+  allocations    QuotaAllocation[]
+
+  @@index([departmentId, startDate, endDate])
+  @@index([academicYear])
+  @@index([status])
+}
+
+model TrainingRequest {
+  id                 String          @id @default(cuid())
+  requestNo          String          @unique
+  institutionId      String
+  departmentId       String
+  programId          String?
+  educationLevel     String          @default("ปริญญาตรี")
+  academicYear       Int             @default(2569)
+  semester           String          @default("1")
+  requestedStartDate DateTime
+  requestedEndDate   DateTime
+  requestedStudents  Int             @default(1)
+  approvedStudents   Int             @default(0)
+  coordinatorName    String
+  coordinatorPhone   String
+  coordinatorEmail   String
+  status             RequestStatus   @default(SUBMITTED)
+  officialLetterUrl  String?
+  supportingDocUrl   String?
+  notes              String?         @db.Text
+  rejectionReason    String?         @db.Text
+  reviewedBy         String?
+  reviewedAt         DateTime?
+  approvedBy         String?
+  approvedAt         DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  institution        Institution     @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  department         Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  program            Program?        @relation(fields: [programId], references: [id], onDelete: SetNull)
+  requestStudents    TrainingRequestStudent[]
+  placements         Placement[]
+  allocations        QuotaAllocation[]
+  documents          Document[]
+
+  @@index([status])
+  @@index([institutionId])
+  @@index([departmentId])
+  @@index([academicYear])
+  @@index([requestedStartDate])
+}
+
+model Student {
+  id               String          @id @default(cuid())
+  studentCode      String
+  prefix           String          @default("นาย")
+  firstName        String
+  lastName         String
+  institutionId    String
+  faculty          String?
+  program          String?
+  educationLevel   String          @default("ปริญญาตรี")
+  yearLevel        Int             @default(4)
+  phone            String?
+  email            String?
+  emergencyContact String?
+  emergencyPhone   String?
+  nationalIdMasked String?
+  startDate        DateTime?
+  endDate          DateTime?
+  departmentId     String?
+  placementStatus  PlacementStatus @default(PENDING)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  institution      Institution     @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  department       Department?     @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  requestStudents  TrainingRequestStudent[]
+  placements       Placement[]
+  documents        Document[]
+
+  @@unique([institutionId, studentCode])
+  @@index([institutionId])
+  @@index([departmentId])
+  @@index([placementStatus])
+}
+
+model TrainingRequestStudent {
+  id               String          @id @default(cuid())
+  requestId        String
+  studentId        String
+  allocatedStatus  PlacementStatus @default(PENDING)
+  notes            String?
+
+  request          TrainingRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  student          Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([requestId, studentId])
+  @@index([requestId])
+  @@index([studentId])
+}
+
+model QuotaAllocation {
+  id            String          @id @default(cuid())
+  quotaPeriodId String
+  requestId     String
+  studentCount  Int
+  allocatedAt   DateTime        @default(now())
+  allocatedBy   String?
+
+  quotaPeriod   QuotaPeriod     @relation(fields: [quotaPeriodId], references: [id], onDelete: Cascade)
+  request       TrainingRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([quotaPeriodId])
+  @@index([requestId])
+}
+
+model Placement {
+  id            String          @id @default(cuid())
+  studentId     String
+  requestId     String?
+  departmentId  String
+  quotaPeriodId String?
+  preceptorId   String?
+  startDate     DateTime
+  endDate       DateTime
+  status        PlacementStatus @default(APPROVED)
+  approvedBy    String?
+  approvedAt    DateTime?       @default(now())
+  notes         String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  student       Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  request       TrainingRequest?@relation(fields: [requestId], references: [id], onDelete: SetNull)
+  department    Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  quotaPeriod   QuotaPeriod?    @relation(fields: [quotaPeriodId], references: [id], onDelete: SetNull)
+  preceptor     Preceptor?      @relation(fields: [preceptorId], references: [id], onDelete: SetNull)
+  assignments   PreceptorAssignment[]
+  attendances   Attendance[]
+  evaluations   Evaluation[]
+  documents     Document[]
+
+  @@index([studentId])
+  @@index([departmentId])
+  @@index([quotaPeriodId])
+  @@index([preceptorId])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model Preceptor {
+  id            String          @id @default(cuid())
+  employeeCode  String          @unique
+  name          String
+  profession    String
+  departmentId  String
+  email         String?
+  phone         String?
+  active        Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  department    Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  users         User[]
+  placements    Placement[]
+  assignments   PreceptorAssignment[]
+  evaluations   Evaluation[]
+
+  @@index([departmentId])
+  @@index([active])
+}
+
+model PreceptorAssignment {
+  id           String    @id @default(cuid())
+  preceptorId  String
+  placementId  String
+  assignedDate DateTime  @default(now())
+  notes        String?
+
+  preceptor    Preceptor @relation(fields: [preceptorId], references: [id], onDelete: Cascade)
+  placement    Placement @relation(fields: [placementId], references: [id], onDelete: Cascade)
+
+  @@unique([preceptorId, placementId])
+  @@index([preceptorId])
+  @@index([placementId])
+}
+
+model Attendance {
+  id          String           @id @default(cuid())
+  placementId String
+  date        DateTime         @db.Date
+  checkIn     String?
+  checkOut    String?
+  status      AttendanceStatus @default(PRESENT)
+  note        String?          @db.Text
+  recordedBy  String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  placement   Placement        @relation(fields: [placementId], references: [id], onDelete: Cascade)
+
+  @@unique([placementId, date])
+  @@index([placementId])
+  @@index([date])
+}
+
+model EvaluationTemplate {
+  id           String       @id @default(cuid())
+  name         String
+  programId    String?
+  departmentId String?
+  isDefault    Boolean      @default(false)
+  active       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  program      Program?     @relation(fields: [programId], references: [id], onDelete: SetNull)
+  department   Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  evaluations  Evaluation[]
+
+  @@index([active])
+}
+
+model Evaluation {
+  id                  String             @id @default(cuid())
+  placementId         String
+  templateId          String?
+  preceptorId         String
+  evaluationDate      DateTime           @default(now())
+  totalScore          Float              @default(0)
+  maxScore            Float              @default(100)
+  percentageScore     Float              @default(0)
+  grade               String?            @default("A")
+  qualitativeFeedback String?            @db.Text
+  status              String             @default("SUBMITTED")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  placement           Placement          @relation(fields: [placementId], references: [id], onDelete: Cascade)
+  template            EvaluationTemplate?@relation(fields: [templateId], references: [id], onDelete: SetNull)
+  preceptor           Preceptor          @relation(fields: [preceptorId], references: [id], onDelete: Restrict)
+  scores              EvaluationScore[]
+
+  @@index([placementId])
+  @@index([preceptorId])
+}
+
+model EvaluationScore {
+  id            String     @id @default(cuid())
+  evaluationId  String
+  category      String
+  criterionName String
+  maxScore      Float      @default(10)
+  score         Float      @default(0)
+  comment       String?
+
+  evaluation    Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+
+  @@index([evaluationId])
+}
+
+model Document {
+  id               String       @id @default(cuid())
+  title            String
+  documentType     DocumentType @default(REQUEST_LETTER)
+  fileUrl          String
+  fileName         String
+  originalFileName String?
+  mimeType         String
+  fileSize         Int
+  requestId        String?
+  studentId        String?
+  placementId      String?
+  uploadedBy       String?
+  createdAt        DateTime     @default(now())
+
+  request          TrainingRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  student          Student?         @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  placement        Placement?       @relation(fields: [placementId], references: [id], onDelete: SetNull)
+
+  @@index([requestId])
+  @@index([studentId])
+  @@index([placementId])
+}
+
+model DocumentVerification {
+  id               String       @id @default(cuid())
+  verificationCode String       @unique
+  documentNo       String
+  documentType     String
+  issueDate        DateTime     @default(now())
+  validUntil       DateTime?
+  hospitalName     String       @default("โรงพยาบาลปลวกแดง")
+  title            String
+  metadataJson     String?      @db.Text
+  createdAt        DateTime     @default(now())
+
+  @@index([verificationCode])
+  @@index([documentNo])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  username  String
+  action    String
+  entity    String
+  entityId  String?
+  oldValue  String?  @db.Text
+  newValue  String?  @db.Text
+  ipAddress String?
+  userAgent String?  @db.Text
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([username])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  category    String   @default("GENERAL")
+  updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String?
+  role      RoleType?
+  title     String
+  message   String    @db.Text
+  linkUrl   String?
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([role])
+}
