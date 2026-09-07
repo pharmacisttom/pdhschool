@@ -199,7 +199,7 @@ async function main() {
 
   // 6. Users & RBAC
   const salt = await bcrypt.genSalt(10);
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin@Pdh2569';
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || '@Pdhschool10832';
   const adminPasswordHash = await bcrypt.hash(adminPassword, salt);
   const commonPasswordHash = await bcrypt.hash('Pdh@123456', salt);
 

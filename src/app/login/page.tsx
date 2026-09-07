@@ -143,7 +143,7 @@ function LoginForm() {
           <div className="flex flex-wrap gap-1.5">
             <button
               type="button"
-              onClick={() => fillDemo('admin', 'Admin@Pdh2569')}
+              onClick={() => fillDemo('admin', '@Pdhschool10832')}
               className="text-[11px] font-semibold bg-sky-50 hover:bg-sky-100 text-sky-800 px-2.5 py-1 rounded-lg border border-sky-200 transition-colors"
             >
               Super Admin
