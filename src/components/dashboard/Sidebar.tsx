@@ -73,31 +73,165 @@ export default function Sidebar({
     }
   };
 
-  const navItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'คำขอฝึกงาน', href: '/dashboard/requests', icon: FileSpreadsheet },
-    { label: 'โควต้า', href: '/dashboard/quotas', icon: PieChart },
-    { label: 'นักศึกษา', href: '/dashboard/students', icon: GraduationCap },
-    { label: 'สถานศึกษา', href: '/dashboard/institutions', icon: Building2 },
-    { label: 'หน่วยงาน', href: '/dashboard/departments', icon: Layers },
-    { label: 'หลักสูตร/วิชาชีพ', href: '/dashboard/programs', icon: Award },
-    { label: 'การจัดสรร', href: '/dashboard/placements', icon: UserCheck },
-    { label: 'ปฏิทิน', href: '/dashboard/calendar', icon: CalendarDays },
-    { label: 'อาจารย์ผู้ควบคุม', href: '/dashboard/preceptors', icon: Users2 },
-    { label: 'การลงเวลา', href: '/dashboard/attendance', icon: Clock },
-    { label: 'การประเมิน', href: '/dashboard/evaluations', icon: ClipboardCheck },
-    { label: 'เอกสาร', href: '/dashboard/documents', icon: FolderLock },
-    { label: 'รายงาน', href: '/dashboard/reports', icon: BarChart3 },
-    ...(user.role === 'SUPER_ADMIN'
-      ? [{ label: 'ผู้ใช้งาน', href: '/dashboard/users', icon: ShieldAlert }]
-      : []),
-    ...(['SUPER_ADMIN', 'TRAINING_ADMIN'].includes(user.role)
-      ? [{ label: 'Audit Log', href: '/dashboard/audit', icon: History }]
-      : []),
-    ...(user.role === 'SUPER_ADMIN'
-      ? [{ label: 'ตั้งค่า', href: '/dashboard/settings', icon: Settings }]
-      : []),
+  const allNavItems = [
+    {
+      label: 'Dashboard',
+      href: '/dashboard',
+      icon: LayoutDashboard,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.PRECEPTOR,
+        RoleType.INSTITUTION,
+        RoleType.VIEWER,
+      ],
+    },
+    {
+      label: 'คำขอฝึกงาน',
+      href: '/dashboard/requests',
+      icon: FileSpreadsheet,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.INSTITUTION,
+      ],
+    },
+    {
+      label: 'โควต้า',
+      href: '/dashboard/quotas',
+      icon: PieChart,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.INSTITUTION,
+      ],
+    },
+    {
+      label: 'นักศึกษา',
+      href: '/dashboard/students',
+      icon: GraduationCap,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.INSTITUTION,
+      ],
+    },
+    {
+      label: 'สถานศึกษา',
+      href: '/dashboard/institutions',
+      icon: Building2,
+      roles: [RoleType.SUPER_ADMIN, RoleType.TRAINING_ADMIN],
+    },
+    {
+      label: 'หน่วยงาน',
+      href: '/dashboard/departments',
+      icon: Layers,
+      roles: [RoleType.SUPER_ADMIN, RoleType.TRAINING_ADMIN],
+    },
+    {
+      label: 'หลักสูตร/วิชาชีพ',
+      href: '/dashboard/programs',
+      icon: Award,
+      roles: [RoleType.SUPER_ADMIN, RoleType.TRAINING_ADMIN],
+    },
+    {
+      label: 'การจัดสรร',
+      href: '/dashboard/placements',
+      icon: UserCheck,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.PRECEPTOR,
+      ],
+    },
+    {
+      label: 'ปฏิทิน',
+      href: '/dashboard/calendar',
+      icon: CalendarDays,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.PRECEPTOR,
+        RoleType.INSTITUTION,
+        RoleType.VIEWER,
+      ],
+    },
+    {
+      label: 'อาจารย์ผู้ควบคุม',
+      href: '/dashboard/preceptors',
+      icon: Users2,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+      ],
+    },
+    {
+      label: 'การลงเวลา',
+      href: '/dashboard/attendance',
+      icon: Clock,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.PRECEPTOR,
+      ],
+    },
+    {
+      label: 'การประเมิน',
+      href: '/dashboard/evaluations',
+      icon: ClipboardCheck,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.PRECEPTOR,
+      ],
+    },
+    {
+      label: 'เอกสาร',
+      href: '/dashboard/documents',
+      icon: FolderLock,
+      roles: [
+        RoleType.SUPER_ADMIN,
+        RoleType.TRAINING_ADMIN,
+        RoleType.DEPARTMENT_ADMIN,
+        RoleType.INSTITUTION,
+      ],
+    },
+    {
+      label: 'รายงาน',
+      href: '/dashboard/reports',
+      icon: BarChart3,
+      roles: [RoleType.SUPER_ADMIN, RoleType.TRAINING_ADMIN, RoleType.VIEWER],
+    },
+    {
+      label: 'ผู้ใช้งาน',
+      href: '/dashboard/users',
+      icon: ShieldAlert,
+      roles: [RoleType.SUPER_ADMIN],
+    },
+    {
+      label: 'Audit Log',
+      href: '/dashboard/audit',
+      icon: History,
+      roles: [RoleType.SUPER_ADMIN, RoleType.TRAINING_ADMIN],
+    },
+    {
+      label: 'ตั้งค่า',
+      href: '/dashboard/settings',
+      icon: Settings,
+      roles: [RoleType.SUPER_ADMIN],
+    },
   ];
+
+  const navItems = allNavItems.filter((item) => item.roles.includes(user.role));
 
   return (
     <>
