@@ -37,10 +37,31 @@ export async function POST(req: NextRequest) {
       coordinatorEmail,
       officialEmail,
       notes,
+      studentDetails,
     } = body;
 
     if (!code || !nameThai || !coordinatorName || !coordinatorPhone || !coordinatorEmail) {
       return errorResponse('กรุณาระบุข้อมูลจำเป็นของสถาบันและผู้ประสานงานให้ครบถ้วน', 'INVALID_INPUT', 400);
+    }
+
+    let finalNotes = notes || '';
+    if (studentDetails) {
+      finalNotes = JSON.stringify({
+        notes: notes || studentDetails.additionalNotes || '',
+        studentDetails: {
+          educationLevel: studentDetails.educationLevel || '',
+          faculty: faculty || studentDetails.faculty || '',
+          major: studentDetails.major || '',
+          classYear: studentDetails.classYear || '',
+          studentCount: studentDetails.studentCount ? Number(studentDetails.studentCount) : null,
+          targetDepartment: studentDetails.targetDepartment || '',
+          startDate: studentDetails.startDate || '',
+          endDate: studentDetails.endDate || '',
+          trainingPeriod: studentDetails.trainingPeriod || '',
+          estimatedHours: studentDetails.estimatedHours ? Number(studentDetails.estimatedHours) : null,
+          additionalNotes: studentDetails.additionalNotes || notes || '',
+        },
+      });
     }
 
     const session = await getSession();
@@ -64,7 +85,7 @@ export async function POST(req: NextRequest) {
         coordinatorEmail: coordinatorEmail.trim(),
         officialEmail,
         status: initialStatus,
-        notes,
+        notes: finalNotes,
       },
     });
 
