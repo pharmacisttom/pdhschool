@@ -24,8 +24,12 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/uploads') ||
     pathname.startsWith('/favicon') ||
     pathname.startsWith('/verify') ||
+    pathname.startsWith('/attendance/scan') ||
     pathname.startsWith('/api/health') ||
-    pathname.startsWith('/api/quotas/public')
+    pathname.startsWith('/api/quotas/public') ||
+    pathname.startsWith('/api/attendance/daily-qr') ||
+    pathname.startsWith('/api/attendance/scan-lookup') ||
+    pathname.startsWith('/api/attendance/scan-action')
   ) {
     return NextResponse.next();
   }
