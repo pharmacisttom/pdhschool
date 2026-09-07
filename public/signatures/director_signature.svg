@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160" width="400" height="160">
+  <!-- Stylized medical doctor signature in elegant fountain pen dark blue ink -->
+  <g fill="none" stroke="#0f2f57" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Initial stroke & loop -->
+    <path d="M 45,115 C 55,75 75,35 90,40 C 105,45 85,120 70,125 C 60,130 95,90 120,85 C 145,80 135,110 155,100" stroke-width="3.2" />
+    
+    <!-- Flowing middle cursive letters -->
+    <path d="M 155,100 C 168,92 175,115 185,105 C 195,95 200,108 215,95 C 225,85 230,112 245,98" stroke-width="2.6" />
+    
+    <!-- Ascender loop -->
+    <path d="M 245,98 C 255,85 270,30 280,35 C 290,40 275,105 285,100 C 295,95 315,90 330,85" stroke-width="2.8" />
+    
+    <!-- Long dynamic underline flourish with loop -->
+    <path d="M 50,135 C 110,132 210,128 290,125 C 340,123 370,118 360,135 C 350,148 310,145 280,142 C 240,138 180,145 130,150" stroke-width="2.2" opacity="0.9" />
+
+    <!-- Secondary flourish hook -->
+    <path d="M 95,45 C 120,38 160,32 180,36" stroke-width="1.8" opacity="0.8" />
+  </g>
+</svg>

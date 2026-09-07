@@ -77,6 +77,17 @@ export default function CertificatesPage() {
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'ISSUED' | 'PENDING'>('ALL');
   const [selectedRecord, setSelectedRecord] = useState<CertificateRecord | null>(null);
   const [issuingPlacementId, setIssuingPlacementId] = useState<string | null>(null);
+  const [directorInfo, setDirectorInfo] = useState<{
+    directorName: string;
+    directorPosition: string;
+    signatureUrl: string;
+    showSignature: boolean;
+  }>({
+    directorName: 'นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง',
+    directorPosition: 'ผู้อำนวยการโรงพยาบาลปลวกแดง',
+    signatureUrl: '/signatures/director_signature.svg',
+    showSignature: true,
+  });
 
   const fetchCertificates = async () => {
     try {
@@ -95,6 +106,14 @@ export default function CertificatesPage() {
 
   useEffect(() => {
     fetchCertificates();
+    fetch('/api/settings/signature')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data) {
+          setDirectorInfo(d.data);
+        }
+      })
+      .catch((e) => console.error(e));
   }, []);
 
   const handleIssueCertificate = async (item: CertificateRecord) => {
@@ -594,14 +613,22 @@ export default function CertificatesPage() {
 
                   {/* Right: Hospital Director */}
                   <div className="flex flex-col items-center">
-                    <div className="w-44 border-b border-slate-400 mb-2 h-10 flex items-end justify-center">
-                      <span className="font-serif italic text-sm text-slate-400">(ลงนามผู้อำนวยการ)</span>
+                    <div className="w-48 border-b border-slate-400 mb-2 h-14 flex items-end justify-center relative">
+                      {(directorInfo.showSignature && ((selectedRecord.certificate as any)?.signers?.director?.signatureUrl || directorInfo.signatureUrl)) ? (
+                        <img
+                          src={(selectedRecord.certificate as any)?.signers?.director?.signatureUrl || directorInfo.signatureUrl}
+                          alt="ลายเซ็นต์ผู้อำนวยการโรงพยาบาล"
+                          className="max-h-12 max-w-[150px] object-contain mb-0.5 select-none pointer-events-none"
+                        />
+                      ) : (
+                        <span className="font-serif italic text-sm text-slate-400">(ลงนามผู้อำนวยการ)</span>
+                      )}
                     </div>
                     <p className="text-xs font-bold text-slate-900">
-                      (นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง)
+                      ({(selectedRecord.certificate as any)?.signers?.director?.name || directorInfo.directorName || 'นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง'})
                     </p>
                     <p className="text-[11px] text-slate-600 font-medium">
-                      ผู้อำนวยการโรงพยาบาลปลวกแดง
+                      {(selectedRecord.certificate as any)?.signers?.director?.position || directorInfo.directorPosition || 'ผู้อำนวยการโรงพยาบาลปลวกแดง'}
                     </p>
                     <p className="text-[10px] text-slate-400 mt-1">
                       ให้ไว้ ณ วันที่ {selectedRecord.certificate.thaiIssueDate || selectedRecord.trainingPeriod.thaiEndDate}

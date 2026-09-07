@@ -118,6 +118,13 @@ export async function GET(req: NextRequest) {
         qrCodeDataUrl = await generateVerificationQR(`${baseUrl}/verify/${existingCert.verificationCode}`);
       }
 
+      let existingMeta: any = {};
+      if (existingCert) {
+        try {
+          if (existingCert.metadataJson) existingMeta = JSON.parse(existingCert.metadataJson);
+        } catch {}
+      }
+
       return {
         placementId: p.id,
         placementStatus: p.status,
@@ -171,6 +178,7 @@ export async function GET(req: NextRequest) {
               thaiIssueDate: toThaiDate(existingCert.issueDate, 'long'),
               title: existingCert.title,
               qrCodeDataUrl,
+              signers: existingMeta.signers,
             }
           : null,
       };
@@ -283,6 +291,25 @@ export async function POST(req: NextRequest) {
             percentageScore: 92,
           };
 
+    // Query director settings
+    const dirSettings = await prisma.systemSetting.findMany({
+      where: {
+        key: {
+          in: [
+            'HOSPITAL_DIRECTOR_NAME',
+            'HOSPITAL_DIRECTOR_POSITION',
+            'HOSPITAL_DIRECTOR_SIGNATURE_URL',
+            'HOSPITAL_DIRECTOR_SHOW_SIGNATURE',
+          ],
+        },
+      },
+    });
+    const dirMap = Object.fromEntries(dirSettings.map((s) => [s.key, s.value]));
+    const finalDirectorName = directorName || dirMap['HOSPITAL_DIRECTOR_NAME'] || 'นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง';
+    const finalDirectorPos = dirMap['HOSPITAL_DIRECTOR_POSITION'] || 'ผู้อำนวยการโรงพยาบาลปลวกแดง';
+    const finalSigUrl = dirMap['HOSPITAL_DIRECTOR_SIGNATURE_URL'] || '/signatures/director_signature.svg';
+    const showSig = dirMap['HOSPITAL_DIRECTOR_SHOW_SIGNATURE'] !== 'false';
+
     const metadata = {
       placementId: placement.id,
       student: {
@@ -313,9 +340,10 @@ export async function POST(req: NextRequest) {
       evaluation: evaluationData,
       signers: {
         director: {
-          name: directorName || 'นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง',
-          position: 'ผู้อำนวยการโรงพยาบาลปลวกแดง',
-          title: 'ผู้อำนวยการโรงพยาบาลปลวกแดง',
+          name: finalDirectorName,
+          position: finalDirectorPos,
+          title: finalDirectorPos,
+          signatureUrl: showSig ? finalSigUrl : null,
         },
         preceptor: {
           name: preceptorName || placement.preceptor?.name || 'หัวหน้ากลุ่มงาน / อาจารย์พี่เลี้ยง',

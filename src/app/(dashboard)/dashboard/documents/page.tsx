@@ -20,6 +20,17 @@ export default function DocumentsPage() {
   const [docType, setDocType] = useState('ACCEPTANCE');
   const [generatedDoc, setGeneratedDoc] = useState<any | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [directorInfo, setDirectorInfo] = useState<{
+    directorName: string;
+    directorPosition: string;
+    signatureUrl: string;
+    showSignature: boolean;
+  }>({
+    directorName: 'นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง',
+    directorPosition: 'ผู้อำนวยการโรงพยาบาลปลวกแดง',
+    signatureUrl: '/signatures/director_signature.svg',
+    showSignature: true,
+  });
 
   useEffect(() => {
     fetch('/api/requests')
@@ -29,6 +40,15 @@ export default function DocumentsPage() {
         setRequests(reqList);
         if (reqList.length > 0) setSelectedRequestId(reqList[0].id);
       });
+
+    fetch('/api/settings/signature')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data) {
+          setDirectorInfo(d.data);
+        }
+      })
+      .catch((e) => console.error(e));
   }, []);
 
   const handleGenerate = async () => {
@@ -244,11 +264,26 @@ export default function DocumentsPage() {
               </div>
             </div>
 
-            <div className="text-center text-xs space-y-8 pr-4">
+            <div className="text-center text-xs space-y-4 pr-4">
               <div>ขอแสดงความนับถือ</div>
-              <div className="pt-6">
-                <div className="font-bold text-slate-900">(นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง)</div>
-                <div className="text-slate-500 text-[11px] mt-0.5">ผู้อำนวยการโรงพยาบาลปลวกแดง</div>
+              <div className="pt-2 flex flex-col items-center">
+                <div className="min-h-[50px] max-h-[70px] flex items-end justify-center mb-1">
+                  {directorInfo.showSignature && directorInfo.signatureUrl ? (
+                    <img
+                      src={directorInfo.signatureUrl}
+                      alt="ลายเซ็นต์ผู้อำนวยการโรงพยาบาล"
+                      className="max-h-12 max-w-[150px] object-contain select-none pointer-events-none"
+                    />
+                  ) : (
+                    <div className="h-6" />
+                  )}
+                </div>
+                <div className="font-bold text-slate-900">
+                  ({directorInfo.directorName || 'นายแพทย์ผู้อำนวยการโรงพยาบาลปลวกแดง'})
+                </div>
+                <div className="text-slate-500 text-[11px] mt-0.5">
+                  {directorInfo.directorPosition || 'ผู้อำนวยการโรงพยาบาลปลวกแดง'}
+                </div>
               </div>
             </div>
           </div>
