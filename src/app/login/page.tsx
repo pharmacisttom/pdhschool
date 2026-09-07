@@ -201,6 +201,19 @@ export default function LoginPage() {
       >
         <LoginForm />
       </Suspense>
+
+      <footer className="mt-6 text-center text-xs text-slate-500 space-y-1">
+        <div>© 2569 โรงพยาบาลปลวกแดง (Pluakdaeng Hospital)</div>
+        <div className="flex items-center justify-center gap-2 font-mono text-[11px] text-slate-400">
+          <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600 font-bold">
+            v1.2.0
+          </span>
+          <span>•</span>
+          <span>
+            ผู้พัฒนา: <strong className="text-teal-800 font-bold">Tomvis</strong>
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }

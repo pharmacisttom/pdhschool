@@ -213,6 +213,20 @@ export default async function TrainingQuotaPage() {
           ))}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 space-y-1">
+        <div>© 2569 โรงพยาบาลปลวกแดง (Pluakdaeng Hospital) • PDHSCHOOL</div>
+        <div className="flex items-center justify-center gap-2 font-mono text-[11px] text-slate-400">
+          <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 font-bold">
+            v1.2.0
+          </span>
+          <span>•</span>
+          <span>
+            ผู้พัฒนา: <strong className="text-teal-900 font-bold">Tomvis</strong>
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }

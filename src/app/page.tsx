@@ -387,8 +387,19 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-slate-800 text-center text-xs text-slate-500">
-            © 2569 โรงพยาบาลปลวกแดง (Pluakdaeng Hospital). All rights reserved. | ระบบบริหารจัดการนักเรียน นักศึกษา และแหล่งฝึกงาน
+          <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+            <div>
+              © 2569 โรงพยาบาลปลวกแดง (Pluakdaeng Hospital). All rights reserved. | ระบบบริหารจัดการนักเรียน นักศึกษา และแหล่งฝึกงาน
+            </div>
+            <div className="flex items-center gap-2.5">
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-800 text-teal-300 font-mono text-xs font-bold border border-teal-500/30">
+                Version 1.2.0
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="text-slate-300">
+                ผู้พัฒนา: <strong className="text-teal-400 font-bold tracking-wide">Tomvis</strong>
+              </span>
+            </div>
           </div>
         </div>
       </footer>

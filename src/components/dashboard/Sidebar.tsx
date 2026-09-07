@@ -344,6 +344,13 @@ export default function Sidebar({
             <LogOut className="w-4 h-4 shrink-0" />
             {!collapsed && <span>ออกจากระบบ</span>}
           </button>
+
+          {!collapsed && (
+            <div className="mt-2.5 pt-2 border-t border-slate-800/80 text-center text-[10px] text-slate-500 font-mono">
+              <span>v1.2.0 • ผู้พัฒนา: </span>
+              <strong className="text-teal-400 font-semibold">Tomvis</strong>
+            </div>
+          )}
         </div>
       </aside>
     </>
