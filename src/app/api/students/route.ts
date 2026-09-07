@@ -26,6 +26,19 @@ export async function GET(req: NextRequest) {
     whereClause.institutionId = institutionId;
   }
 
+  // Department admin isolation: only see students placed or assigned in their department
+  if (session.role === 'DEPARTMENT_ADMIN' && session.departmentId) {
+    whereClause.AND = [
+      ...(whereClause.AND || []),
+      {
+        OR: [
+          { departmentId: session.departmentId },
+          { placements: { some: { departmentId: session.departmentId } } },
+        ],
+      },
+    ];
+  }
+
   if (search) {
     whereClause.OR = [
       { firstName: { contains: search } },

@@ -19,6 +19,7 @@ import { toThaiDateRange } from '@/lib/utils/date';
 import { QuotaStatus } from '@prisma/client';
 
 export default function QuotasPage() {
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [quotas, setQuotas] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
   const [programs, setPrograms] = useState<any[]>([]);
@@ -40,14 +41,25 @@ export default function QuotasPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [resQ, resD, resP] = await Promise.all([
+      const [resQ, resD, resP, resMe] = await Promise.all([
         fetch('/api/quotas'),
         fetch('/api/departments'),
         fetch('/api/programs'),
+        fetch('/api/auth/me'),
       ]);
       const dataQ = await resQ.json();
       const dataD = await resD.json();
       const dataP = await resP.json();
+      const dataMe = await resMe.json();
+
+      if (dataMe.success && dataMe.data?.user) {
+        const u = dataMe.data.user;
+        setCurrentUser(u);
+        if (u.role === 'DEPARTMENT_ADMIN' && u.departmentId) {
+          setSelectedDept(u.departmentId);
+          setForm((prev) => ({ ...prev, departmentId: u.departmentId }));
+        }
+      }
 
       if (dataQ.success) setQuotas(dataQ.data || []);
       if (dataD.success) setDepartments(dataD.data || []);
@@ -116,21 +128,57 @@ export default function QuotasPage() {
         </button>
       </div>
 
+      {/* Role & Scope Indicator Banner */}
+      {currentUser?.role === 'DEPARTMENT_ADMIN' && (
+        <div className="bg-teal-50 border border-teal-200 text-teal-900 rounded-2xl p-4 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-2.5 font-semibold">
+            <Lock className="w-4 h-4 text-teal-600 flex-shrink-0" />
+            <span>
+              มุมมองเฉพาะกลุ่มงาน: คุณมีสิทธิ์ตรวจสอบและเปิดรับโควต้าเฉพาะ <strong>{currentUser.departmentName}</strong> เท่านั้น
+            </span>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-teal-100 text-teal-800 font-mono font-bold text-[11px] border border-teal-200">
+            DEPARTMENT_ADMIN
+          </span>
+        </div>
+      )}
+
+      {['SUPER_ADMIN', 'TRAINING_ADMIN'].includes(currentUser?.role) && (
+        <div className="bg-sky-50 border border-sky-200 text-sky-900 rounded-2xl p-4 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-2.5 font-semibold">
+            <Unlock className="w-4 h-4 text-sky-600 flex-shrink-0" />
+            <span>
+              มุมมองผู้ดูแลระบบส่วนกลาง (Central Admin): คุณสามารถตรวจสอบและปรับปรุงโควต้าได้ทุกกลุ่มงานทั่วทั้งโรงพยาบาล (16 กลุ่มงาน)
+            </span>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 font-mono font-bold text-[11px] border border-sky-200">
+            {currentUser?.role}
+          </span>
+        </div>
+      )}
+
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
         <Filter className="w-4 h-4 text-slate-400" />
-        <select
-          value={selectedDept}
-          onChange={(e) => setSelectedDept(e.target.value)}
-          className="py-2 px-3 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-        >
-          <option value="">ทุกกลุ่มงาน/แผนก</option>
-          {departments.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.nameThai}
-            </option>
-          ))}
-        </select>
+        {currentUser?.role === 'DEPARTMENT_ADMIN' ? (
+          <div className="flex items-center gap-2 text-xs font-bold text-teal-800 bg-teal-50/80 px-3 py-2 rounded-xl border border-teal-200">
+            <Lock className="w-3.5 h-3.5 text-teal-600" />
+            <span>กลุ่มงานของคุณ: {currentUser.departmentName}</span>
+          </div>
+        ) : (
+          <select
+            value={selectedDept}
+            onChange={(e) => setSelectedDept(e.target.value)}
+            className="py-2 px-3 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+          >
+            <option value="">ทุกกลุ่มงาน/แผนก (16 กลุ่มงาน)</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.nameThai}
+              </option>
+            ))}
+          </select>
+        )}
         <span className="text-xs text-slate-400">
           แสดง {filteredQuotas.length} รอบโควต้า
         </span>
@@ -231,19 +279,26 @@ export default function QuotasPage() {
             <form onSubmit={handleCreate} className="space-y-4 text-xs">
               <div>
                 <label className="block font-bold text-slate-700 mb-1">กลุ่มงาน/แผนก *</label>
-                <select
-                  required
-                  value={form.departmentId}
-                  onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 bg-white"
-                >
-                  <option value="">-- เลือกกลุ่มงาน --</option>
-                  {departments.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.nameThai}
-                    </option>
-                  ))}
-                </select>
+                {currentUser?.role === 'DEPARTMENT_ADMIN' ? (
+                  <div className="p-2.5 rounded-xl border border-teal-300 bg-teal-50/80 text-teal-900 font-bold text-xs flex items-center gap-2">
+                    <Lock className="w-3.5 h-3.5 text-teal-600" />
+                    <span>{currentUser.departmentName}</span>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={form.departmentId}
+                    onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-slate-300 bg-white"
+                  >
+                    <option value="">-- เลือกกลุ่มงาน (16 กลุ่มงาน) --</option>
+                    {departments.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.nameThai}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>

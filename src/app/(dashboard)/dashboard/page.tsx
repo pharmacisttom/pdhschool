@@ -14,6 +14,18 @@ export default async function DashboardPage() {
   const whereRequest: any = { academicYear };
   const whereQuota: any = { academicYear };
 
+  let departmentName: string | null = null;
+  if (session?.departmentId) {
+    const dept = await prisma.department.findUnique({ where: { id: session.departmentId } });
+    departmentName = dept?.nameThai || null;
+  }
+
+  let institutionName: string | null = null;
+  if (session?.institutionId) {
+    const inst = await prisma.institution.findUnique({ where: { id: session.institutionId } });
+    institutionName = inst?.nameThai || null;
+  }
+
   if (session?.role === 'DEPARTMENT_ADMIN' && session.departmentId) {
     whereStudent.departmentId = session.departmentId;
     wherePlacement.departmentId = session.departmentId;
@@ -161,6 +173,12 @@ export default async function DashboardPage() {
 
   return (
     <DashboardAnalytics
+      user={{
+        role: session?.role || 'VIEWER',
+        name: session?.name || '',
+        departmentName,
+        institutionName,
+      }}
       kpis={{
         totalStudentsThisYear,
         currentlyActiveCount,

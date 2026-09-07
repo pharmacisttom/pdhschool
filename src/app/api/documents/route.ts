@@ -17,6 +17,20 @@ export async function GET(req: NextRequest) {
   if (requestId) whereClause.requestId = requestId;
   if (studentId) whereClause.studentId = studentId;
 
+  // Department admin isolation
+  if (session.role === 'DEPARTMENT_ADMIN' && session.departmentId) {
+    whereClause.OR = [
+      { request: { departmentId: session.departmentId } },
+      { student: { departmentId: session.departmentId } },
+      { student: { placements: { some: { departmentId: session.departmentId } } } },
+    ];
+  } else if (session.role === 'INSTITUTION' && session.institutionId) {
+    whereClause.OR = [
+      { request: { institutionId: session.institutionId } },
+      { student: { institutionId: session.institutionId } },
+    ];
+  }
+
   const docs = await prisma.document.findMany({
     where: whereClause,
     include: {

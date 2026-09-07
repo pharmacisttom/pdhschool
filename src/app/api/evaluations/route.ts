@@ -15,6 +15,15 @@ export async function GET(req: NextRequest) {
   const whereClause: any = {};
   if (placementId) whereClause.placementId = placementId;
 
+  // Department admin isolation
+  if (session.role === 'DEPARTMENT_ADMIN' && session.departmentId) {
+    whereClause.placement = { departmentId: session.departmentId };
+  }
+  // Preceptor isolation
+  if (session.role === 'PRECEPTOR' && session.preceptorId) {
+    whereClause.preceptorId = session.preceptorId;
+  }
+
   const evaluations = await prisma.evaluation.findMany({
     where: whereClause,
     include: {

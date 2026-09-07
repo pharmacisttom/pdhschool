@@ -106,6 +106,10 @@ export async function POST(req: NextRequest) {
       return errorResponse('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน', 'INVALID_INPUT', 400);
     }
 
+    if (session.role === 'DEPARTMENT_ADMIN' && session.departmentId && departmentId !== session.departmentId) {
+      return errorResponse('คุณสามารถสร้างโควต้าได้เฉพาะในกลุ่มงานของคุณเท่านั้น', 'FORBIDDEN', 403);
+    }
+
     const quota = await prisma.quotaPeriod.create({
       data: {
         departmentId,

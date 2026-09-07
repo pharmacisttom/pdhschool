@@ -17,6 +17,15 @@ export async function GET(req: NextRequest) {
   if (placementId) whereClause.placementId = placementId;
   if (departmentId) whereClause.placement = { departmentId };
 
+  // Department admin isolation
+  if (session.role === 'DEPARTMENT_ADMIN' && session.departmentId) {
+    whereClause.placement = { ...(whereClause.placement || {}), departmentId: session.departmentId };
+  }
+  // Preceptor isolation
+  if (session.role === 'PRECEPTOR' && session.preceptorId) {
+    whereClause.placement = { ...(whereClause.placement || {}), preceptorId: session.preceptorId };
+  }
+
   if (dateStr) {
     const targetDate = new Date(dateStr);
     whereClause.date = targetDate;

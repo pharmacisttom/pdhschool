@@ -30,6 +30,12 @@ import {
 const COLORS = ['#0284c7', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#64748b'];
 
 interface DashboardAnalyticsProps {
+  user?: {
+    role: string;
+    name?: string;
+    departmentName?: string | null;
+    institutionName?: string | null;
+  };
   kpis: {
     totalStudentsThisYear: number;
     currentlyActiveCount: number;
@@ -50,7 +56,7 @@ interface DashboardAnalyticsProps {
   };
 }
 
-export default function DashboardAnalytics({ kpis, charts }: DashboardAnalyticsProps) {
+export default function DashboardAnalytics({ user, kpis, charts }: DashboardAnalyticsProps) {
   return (
     <div className="space-y-8">
       {/* Top Header */}
@@ -69,6 +75,57 @@ export default function DashboardAnalytics({ kpis, charts }: DashboardAnalyticsP
           <span>ระบบออนไลน์ปกติ • ซิงก์ข้อมูลเรียลไทม์</span>
         </div>
       </div>
+
+      {/* Role & Scope Transparency Banner */}
+      {user && (
+        <div
+          className={`rounded-2xl p-4 border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+            ['SUPER_ADMIN', 'TRAINING_ADMIN'].includes(user.role)
+              ? 'bg-gradient-to-r from-sky-900 via-indigo-900 to-slate-900 border-sky-700/60 text-white'
+              : user.role === 'DEPARTMENT_ADMIN'
+              ? 'bg-gradient-to-r from-teal-900 via-emerald-950 to-slate-900 border-teal-600/60 text-white'
+              : 'bg-gradient-to-r from-slate-900 to-slate-800 border-slate-700 text-white'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-bold text-lg shadow-inner">
+              {['SUPER_ADMIN', 'TRAINING_ADMIN'].includes(user.role)
+                ? '👑'
+                : user.role === 'DEPARTMENT_ADMIN'
+                ? '🏥'
+                : '👤'}
+            </div>
+            <div>
+              <div className="font-bold text-sm flex items-center gap-2">
+                <span>
+                  {['SUPER_ADMIN', 'TRAINING_ADMIN'].includes(user.role)
+                    ? 'สิทธิ์ผู้ดูแลระบบส่วนกลาง (Central Hospital Administrator)'
+                    : user.role === 'DEPARTMENT_ADMIN'
+                    ? `สิทธิ์ผู้ดูแลกลุ่มงาน: ${user.departmentName || 'กลุ่มงานของคุณ'}`
+                    : user.role === 'INSTITUTION'
+                    ? `สิทธิ์สถาบันการศึกษา: ${user.institutionName || 'สถาบันของคุณ'}`
+                    : 'สิทธิ์ผู้ใช้งาน'}
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-white/20 border border-white/20">
+                  {user.role}
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                {['SUPER_ADMIN', 'TRAINING_ADMIN'].includes(user.role)
+                  ? 'คุณสามารถตรวจสอบและบริหารจัดการข้อมูลได้ครบทุกกลุ่มงาน (16 กลุ่มงาน), ทุกหลักสูตร และทุกสถาบันทั่วทั้งโรงพยาบาล'
+                  : user.role === 'DEPARTMENT_ADMIN'
+                  ? `ระบบจำกัดขอบเขตการแสดงผลเฉพาะงานของกลุ่มงาน "${user.departmentName || 'ของคุณ'}" เท่านั้น เพื่อความปลอดภัยและความเป็นส่วนตัว`
+                  : 'แสดงผลเฉพาะข้อมูลที่ได้รับมอบหมายตามสิทธิ์ของคุณ'}
+              </p>
+            </div>
+          </div>
+          {user.name && (
+            <div className="text-right text-xs text-slate-300 hidden sm:block">
+              <span className="font-semibold text-white">{user.name}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* KPI Cards Grid (7 Cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
