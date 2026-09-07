@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Award
 } from 'lucide-react';
+import VisitorCounter from '@/components/analytics/VisitorCounter';
 
 export const revalidate = 60; // ISR 60 seconds
 
@@ -324,10 +325,15 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="mt-auto bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Realtime WebApp Visitor Counter */}
+          <div className="mb-12">
+            <VisitorCounter variant="full" />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 text-white font-extrabold text-xl mb-3">
-                <Hospital className="w-6 h-6 text-sky-400" />
+                <Hospital className="w-6 h-6 text-teal-400" />
                 <span>PDHSCHOOL</span>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed">

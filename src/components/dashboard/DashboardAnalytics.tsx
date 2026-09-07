@@ -26,6 +26,7 @@ import {
   TrendingUp,
   Filter,
 } from 'lucide-react';
+import VisitorCounter from '@/components/analytics/VisitorCounter';
 
 const COLORS = ['#0284c7', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#64748b'];
 
@@ -126,6 +127,9 @@ export default function DashboardAnalytics({ user, kpis, charts }: DashboardAnal
           )}
         </div>
       )}
+
+      {/* Realtime WebApp Visitor Counter Widget */}
+      <VisitorCounter variant="dashboard" autoTrack={false} />
 
       {/* KPI Cards Grid (7 Cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
